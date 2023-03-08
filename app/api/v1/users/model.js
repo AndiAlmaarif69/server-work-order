@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
-const participantSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Nama harus diisi"],
       minlength: 3,
       maxlength: 50,
-    },
-    departemen: {
-      type: String,
-      required: [true, "Departemen harus diisi"],
     },
     email: {
       type: String,
@@ -25,13 +21,19 @@ const participantSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "-",
+      enum: ["admin", "owner"],
+      default: "admin",
+    },
+    owner: {
+      type: mongoose.Types.ObjectId,
+      ref: "Owner",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-participantSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   const User = this;
   if (User.isModified("password")) {
     User.password = await bcrypt.hash(User.password, 12);
@@ -39,9 +41,9 @@ participantSchema.pre("save", async function (next) {
   next();
 });
 
-participantSchema.methods.comparePassword = async function (canditatePassword) {
-  const isMatch = await bcrypt.compare(canditatePassword, this.password);
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };
 
-module.exports = mongoose.model("Participant", participantSchema);
+module.exports = mongoose.model("User", userSchema);

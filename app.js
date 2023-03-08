@@ -7,8 +7,12 @@ const cors = require('cors');
 var app = express();
 
 //import router component API
-const adminRouter = require("./app/api/v1/admin/router");
 const participantRouter = require("./app/api/v1/participant/router");
+const authCMSRouter = require("./app/api/v1/auth/router");
+const ownerRouter = require("./app/api/v1/owner/router");
+const imagesRouter = require("./app/api/v1/images/router");
+const serviceRouter = require("./app/api/v1/service/router");
+const ordersRouter = require("./app/api/v1/order/router");
 
 // membuat variabel v1
 const v1 = "/api/v1";
@@ -31,8 +35,12 @@ app.get('/', (req, res) => {
   });
 
   // Gunakan categories router
-  app.use(`${v1}/cms`, adminRouter);
-  app.use(`${v1}/cms`, participantRouter);
+  app.use(`${v1}`, participantRouter);
+  app.use(`${v1}/cms`, authCMSRouter);
+  app.use(`${v1}/cms`, ownerRouter);
+  app.use(`${v1}/cms`, imagesRouter);
+  app.use(`${v1}/cms`, serviceRouter);
+  app.use(`${v1}/cms`, ordersRouter);
 
   // middlewares
   app.use(notFoundMiddleware);
